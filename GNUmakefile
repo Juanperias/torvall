@@ -30,11 +30,13 @@ run-x86_64: ovmf/ovmf-code-$(ARCH).fd ovmf/ovmf-vars-$(ARCH).fd $(IMAGE_NAME).is
 		$(QEMU_FLAGS)
 	
 .PHONY: run-x86_64
-run-bios-x86_64: ovmf/ovmf-code-$(ARCH).fd ovmf/ovmf-vars-$(ARCH).fd $(IMAGE_NAME).iso
+run-bios-x86_64: $(IMAGE_NAME).iso
 	qemu-system-$(ARCH) \
-		-M q35
+		-M q35 \
 		-cdrom $(IMAGE_NAME).iso \
 		-boot d \
+		-debugcon stdio \
+
 		$(QEMU_FLAGS)
 
 ovmf/ovmf-code-$(ARCH).fd:

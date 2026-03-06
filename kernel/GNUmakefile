@@ -1,8 +1,6 @@
 MAKEFLAGS += -rR
 .SUFFIXES:
 
-override VERSION := $(shell cargo metadata --format-version 1 | jq -r '.packages[] | select(.name=="kernel") | .version')
-
 override DIST := kernel
 override USER_VARIABLE = $(if $(filter $(origin $(1)),default undefined),$(eval override $(1) := $(2)))
 
@@ -10,10 +8,7 @@ $(call USER_VARIABLE,ARCH,x86_64)
 
 
 ifeq ($(RUST_TARGET),)
-    override RUST_TARGET := $(ARCH)-unknown-none
-	ifeq ($(KARCH),riscv64)
-    	override RUST_TARGET := riscv64gc-unknown-none-elf
-	endif
+    override RUST_TARGET := torvall-x86_64-target
 endif
 
 ifeq ($(RUST_PROFILE),)
@@ -27,7 +22,7 @@ endif
 
 .PHONY: all
 all:
-	RUSTFLAGS="-C relocation-model=static" cargo build --target $(RUST_TARGET) --profile $(RUST_PROFILE)
+	RUSTFLAGS="-C relocation-model=static -C code-model=large" cargo build --target $(RUST_TARGET).json --profile $(RUST_PROFILE) -v
 	cp target/$(RUST_TARGET)/$(RUST_PROFILE_SUBDIR)/$$(cd target/$(RUST_TARGET)/$(RUST_PROFILE_SUBDIR) && find -maxdepth 1 -perm -111 -type f) kernel
 
 .PHONY: clean

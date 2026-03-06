@@ -4,3 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+torvall_fmt.workspace = true
+
+[workspace]
+resolver = "3"
+members = [ "torvall_boot_protocol","torvall_unsafe", "torvall_fmt"]
+
+[workspace.dependencies]
+torvall_boot_protocol = { path = "torvall_boot_protocol/" }
+torvall_unsafe = { path = "torvall_unsafe/" }
+torvall_fmt = { path = "torvall_fmt" }
+spin = { version = "0.10.0", features = ["mutex"] }

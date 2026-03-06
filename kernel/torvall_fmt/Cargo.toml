@@ -1,0 +1,8 @@
+[package]
+name = "torvall_fmt"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+torvall_unsafe.workspace = true
+spin.workspace = true
