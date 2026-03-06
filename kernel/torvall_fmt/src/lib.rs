@@ -48,3 +48,14 @@ macro_rules! print {
         write!($crate::LogWriter, "{}", format_args!($($arg)*)).expect("Cannot format args");
     }
 }
+
+#[macro_export]
+macro_rules! println {
+    () => {
+        $crate::print!("\n");
+    };
+    ($($arg:tt)*) => {
+        $crate::print!($($arg)*);
+        $crate::print!("\n");
+    }
+}

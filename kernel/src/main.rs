@@ -2,11 +2,11 @@
 #![no_main]
 
 use core::fmt::Write;
-use torvall_fmt::print;
+use torvall_fmt::println;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn main() -> ! {
-    print!("hello! {}", 2);
+    println!("hello {}", "from torvall");
 
     loop {}
 }
