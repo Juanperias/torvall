@@ -2,7 +2,7 @@
 
 use spin::Mutex;
 use torvall_unsafe::{
-    arch::amd64::irq::{IrqGuard, cli, restore_eflags, save_eflags},
+    arch::amd64::irq::IrqGuard,
     ds::ring_buffer::RingBuffer,
 };
 
@@ -10,6 +10,24 @@ use torvall_unsafe::{
 use crate::writers::{InternalOutputDevice, qemu_debug_port::QemuDebugPortOutput};
 
 pub mod writers;
+
+pub enum Level {
+    Err,
+    Warn,
+    Info,
+    Debug
+}
+
+impl core::fmt::Display for Level {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::Err => f.write_str("[err]"),
+            Self::Warn => f.write_str("[warn]"),
+            Self::Info => f.write_str("[info]"),
+            Self::Debug => f.write_str("[debug]"),
+        }
+    }
+}
 
 const LOG_BUFFER_SIZE: usize = 1 << 17;
 
@@ -44,18 +62,19 @@ impl core::fmt::Write for LogWriter {
 
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => {
-        write!($crate::LogWriter, "{}", format_args!($($arg)*)).expect("Cannot format args");
+    ($level: expr, $($arg:tt)*) => {
+        write!($crate::LogWriter, "{} {}", $level, format_args!($($arg)*)).expect("Cannot format args");
     }
 }
 
 #[macro_export]
 macro_rules! println {
     () => {
-        $crate::print!("\n");
+        write!($crate::LogWriter, "\n").expect("Cannot format args");
     };
-    ($($arg:tt)*) => {
-        $crate::print!($($arg)*);
-        $crate::print!("\n");
+    ($level: expr, $($arg:tt)*) => {
+        $crate::print!($level, $($arg)*);
+        write!($crate::LogWriter, "\n").expect("Cannot format args");
+
     }
 }
